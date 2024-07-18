@@ -1,8 +1,10 @@
 using AspireDay.Domain.Features.Orders.CreateBuyOrder;
+using AspireDay.Domain.Features.Orders.NotifyBuyOrder;
 using AspireDay.Domain.Features.Orders.SaveBuyOrder;
 using AspireDay.Domain.Persistence;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
@@ -35,6 +37,7 @@ public static class Extensions
         builder.AddServiceBus();
         builder.AddMediatR();
         builder.AddCosmosDbContext();
+        builder.AddSignalRHubClient();
 
         // Uncomment the following to restrict the allowed schemes for service discovery.
         // builder.Services.Configure<ServiceDiscoveryOptions>(options =>
@@ -110,14 +113,31 @@ public static class Extensions
         {
             serviceConfiguration.RegisterServicesFromAssembly(typeof(CreateBuyOrderCommand).Assembly);
             serviceConfiguration.RegisterServicesFromAssembly(typeof(SaveBuyOrderCommand).Assembly);
+            serviceConfiguration.RegisterServicesFromAssembly(typeof(NotifyBuyOrderCommand).Assembly);
         });
 
         return builder;
     }
 
-    public static IHostApplicationBuilder AddCosmosDbContext(this IHostApplicationBuilder builder)
+    private static IHostApplicationBuilder AddCosmosDbContext(this IHostApplicationBuilder builder)
     {
         builder.AddCosmosDbContext<StoreDbContext>("aspiredaycosmos", "store");
+        return builder;
+    }
+
+    private static IHostApplicationBuilder AddSignalRHubClient(this IHostApplicationBuilder builder)
+    {
+        builder.Services.AddKeyedTransient<HubConnection>("AspireDaySignalR", (_, _) =>
+        {
+            var hubConnection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:5064/Store")
+                .WithAutomaticReconnect()
+                .WithStatefulReconnect()
+                .Build();
+
+            return hubConnection;
+        });
+
         return builder;
     }
 

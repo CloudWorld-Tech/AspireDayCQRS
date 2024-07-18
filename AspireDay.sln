@@ -10,6 +10,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireDay.WebApi", "AspireD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireDay.Domain", "AspireDay.Domain\AspireDay.Domain.csproj", "{C400A4FE-23CA-4417-B212-4E489F1EB520}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspireDay.WebApp", "AspireDay.WebApp\AspireDay.WebApp.csproj", "{3633EADE-2B0F-4C76-B414-C971E4912564}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{C400A4FE-23CA-4417-B212-4E489F1EB520}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C400A4FE-23CA-4417-B212-4E489F1EB520}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C400A4FE-23CA-4417-B212-4E489F1EB520}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3633EADE-2B0F-4C76-B414-C971E4912564}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3633EADE-2B0F-4C76-B414-C971E4912564}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3633EADE-2B0F-4C76-B414-C971E4912564}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3633EADE-2B0F-4C76-B414-C971E4912564}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

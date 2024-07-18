@@ -10,13 +10,19 @@ var serviceBus = builder.AddAzureServiceBus("aspiredaybus")
 
 var cosmos = builder.AddAzureCosmosDB("aspiredaycosmos");
 var cosmosdb = cosmos.AddDatabase("store");
-
-var webApi = builder.AddProject<AspireDay_WebApi>("WebApi")
+var signalR = builder.AddAzureSignalR("aspiredaysignalr");
+var webApi = builder.AddProject<AspireDay_WebApi>("webapi")
     .WithReference(serviceBus)
-    .WithReference(cosmosdb);
+    .WithReference(cosmosdb)
+    .WithReference(signalR);
+var webApp = builder.AddProject<AspireDay_WebApp>("webapp")
+    .WithReference(signalR)
+    .WithReference(webApi);
 
 builder.AddProject<AspireDay_WorkerService>("WorkerService")
     .WithReference(serviceBus)
-    .WithReference(cosmosdb);
+    .WithReference(cosmosdb)
+    .WithExternalHttpEndpoints()
+    .WithReference(webApi);
 
 builder.Build().Run();

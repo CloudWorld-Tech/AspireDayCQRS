@@ -1,0 +1,82 @@
+﻿@page "/store"
+@using AspireDay.Domain.Features.Orders.GetBuyOrders
+@using AspireDay.WebApp.Clients
+@attribute [StreamRendering]
+@inject StoreApiClient StoreApi
+
+<PageTitle>Store</PageTitle>
+
+<h1>Store</h1>
+
+<p>Orders Request</p>
+
+@if (orders == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Order Id</th>
+            <th>User Id</th>
+            <th>Product Id</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var order in orders)
+        {
+            <tr>
+                <td>@order.OrderId</td>
+                <td>@order.UserId</td>
+                <td>@order.ProductId</td>
+                <td>@order.Quantity</td>
+                <td>@order.Price</td>
+                <td>@(order.Quantity * order.Price)</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("http://localhost:5064/Store")
+        .configureLogging(signalR.LogLevel.Information)
+        .build();
+
+    async function start() {
+        try {
+            await connection.start();
+            console.log("SignalR Connected.");
+        } catch (err) {
+            console.log(err);
+            setTimeout(start, 5000);
+        }
+    }
+
+    connection.onclose(async () => {
+        await start();
+    });
+    
+    connection.on('NotifyBuyOrder', (user, message) => {
+        console.log(message);
+    });
+    
+    start();
+</script>
+
+@code {
+    private GetBuyOrderResponse[]? orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa1"));
+    }
+}

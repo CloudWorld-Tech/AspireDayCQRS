@@ -1,4 +1,5 @@
 using AspireDay.Domain.Features.Orders.CreateBuyOrder;
+using AspireDay.Domain.Features.Orders.NotifyBuyOrder;
 using AspireDay.Domain.Features.Orders.SaveBuyOrder;
 using Azure.Messaging.ServiceBus;
 using Mapster;
@@ -19,6 +20,7 @@ public class Worker(ILogger<Worker> logger, ServiceBusClient client, IMediator m
                 logger.LogInformation("Received message {Hour}: {message}", DateTimeOffset.Now, message);
                 await mediator.Send(new SaveBuyOrderCommand(message.Adapt<SaveBuyOrderModel>()), stoppingToken);
                 await _receiver.CompleteMessageAsync(serviceBusReceivedMessage, stoppingToken);
+                await mediator.Send(new NotifyBuyOrderCommand(), stoppingToken);
             }
     }
 }
