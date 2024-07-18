@@ -7,13 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\AspireDay.ServiceDefaults\AspireDay.ServiceDefaults.csproj" />
+        <ProjectReference Include="..\AspireDay.ServiceDefaults\AspireDay.ServiceDefaults.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Content Update="wwwroot\libs\signalr.min.js">
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      </Content>
+        <Content Update="wwwroot\libs\signalr.min.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
 </Project>

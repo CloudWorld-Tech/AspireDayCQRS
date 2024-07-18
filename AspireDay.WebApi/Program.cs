@@ -15,8 +15,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: "AllowAspire",
-        policy  =>
+    options.AddPolicy("AllowAspire",
+        policy =>
         {
             policy.WithOrigins("http://localhost:5109");
             policy.AllowCredentials();

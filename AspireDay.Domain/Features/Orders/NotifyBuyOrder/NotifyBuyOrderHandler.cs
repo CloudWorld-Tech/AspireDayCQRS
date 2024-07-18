@@ -5,11 +5,11 @@ using Microsoft.Extensions.DependencyInjection;
 namespace AspireDay.Domain.Features.Orders.NotifyBuyOrder;
 
 public class NotifyBuyOrderHandler([FromKeyedServices("AspireDaySignalR")] HubConnection hubConnection)
-    : IRequestHandler<NotifyBuyOrderCommand>
+    : INotificationHandler<NotifyBuyOrderCommand>
 {
     public async Task Handle(NotifyBuyOrderCommand request, CancellationToken cancellationToken)
     {
         await hubConnection.StartAsync(cancellationToken);
-        await hubConnection.InvokeAsync("NotifyBuyOrder","Test","Message", cancellationToken);
+        await hubConnection.InvokeAsync("NotifyBuyOrder", request.ProductId.ToString(), cancellationToken);
     }
 }

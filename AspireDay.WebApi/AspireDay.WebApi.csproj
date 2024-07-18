@@ -10,8 +10,8 @@
         <PackageReference Include="Aspire.Azure.Messaging.ServiceBus" Version="8.0.2"/>
         <PackageReference Include="MediatR" Version="12.3.0"/>
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.7" />
-        <PackageReference Include="Microsoft.Azure.SignalR" Version="1.26.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.7"/>
+        <PackageReference Include="Microsoft.Azure.SignalR" Version="1.26.0"/>
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2"/>
     </ItemGroup>
 

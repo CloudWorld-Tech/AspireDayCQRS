@@ -65,8 +65,8 @@ else
         await start();
     });
     
-    connection.on('NotifyBuyOrder', (user, message) => {
-        console.log(message);
+    connection.on('NotifyBuyOrder', (orderId) => {
+        console.log(orderId);
     });
     
     start();
@@ -79,4 +79,5 @@ else
     {
         orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa1"));
     }
+
 }

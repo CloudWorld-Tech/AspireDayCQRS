@@ -4,6 +4,8 @@ namespace AspireDay.Domain.Hubs;
 
 public class StoreHub : Hub
 {
-    public async Task NotifyBuyOrder(string user, string message)
-        => await Clients.All.SendAsync("NotifyBuyOrder", user, message);
+    public async Task NotifyBuyOrder(string orderId)
+    {
+        await Clients.All.SendAsync("NotifyBuyOrder", orderId);
+    }
 }
