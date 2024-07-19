@@ -2,8 +2,8 @@ namespace AspireDay.Domain.Features.Orders.CreateBuyOrder;
 
 public record CreateBuyOrderModel
 {
-    public Guid ProductId { get; init; }
-    public Guid UserId { get; init; }
-    public int Quantity { get; init; }
-    public decimal Price { get; init; }
+    public string ProductId { get; set; }
+    public string UserId { get; set; }
+    public int Quantity { get; set; }
+    public decimal Price { get; set; }
 }

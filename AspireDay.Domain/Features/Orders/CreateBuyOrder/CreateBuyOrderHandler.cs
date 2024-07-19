@@ -3,10 +3,11 @@ using System.Text.Json;
 using Azure.Messaging.ServiceBus;
 using Mapster;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace AspireDay.Domain.Features.Orders.CreateBuyOrder;
 
-public class CreateBuyOrderHandler(ServiceBusClient client)
+public class CreateBuyOrderHandler(ServiceBusClient client, ILogger<CreateBuyOrderHandler> logger)
     : IRequestHandler<CreateBuyOrderCommand, CreateBuyOrderResponse>
 {
     public async Task<CreateBuyOrderResponse> Handle(CreateBuyOrderCommand request, CancellationToken cancellationToken)
