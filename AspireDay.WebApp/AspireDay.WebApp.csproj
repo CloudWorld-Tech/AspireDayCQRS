@@ -17,7 +17,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid" Version="8.0.7" />
       <PackageReference Include="Syncfusion.Blazor" Version="26.1.42" />
       <PackageReference Include="Syncfusion.Blazor.Themes" Version="26.1.42" />
     </ItemGroup>

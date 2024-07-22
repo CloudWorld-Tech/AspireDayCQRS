@@ -1,6 +1,7 @@
 using AspireDay.ServiceDefaults;
 using AspireDay.WebApp.Clients;
 using AspireDay.WebApp.Components;
+using AspireDay.WebApp.Services;
 using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddHttpClient<StoreApiClient>(client => client.BaseAddress = new Uri("http://webapi"));
+builder.Services.AddSingleton<ISessionService, SessionService>();
 
 var app = builder.Build();
 

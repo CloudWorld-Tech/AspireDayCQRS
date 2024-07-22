@@ -1,6 +1,7 @@
 using AspireDay.Domain.Hubs;
 using AspireDay.ServiceDefaults;
 using AspireDay.WebApi.Features.Store.CreateBuyOrder;
+using AspireDay.WebApi.Features.Store.DeleteBuyOrder;
 using AspireDay.WebApi.Features.Store.GetBuyOrders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,8 +35,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.AddCreateBuyOrderEndpoint();
-app.AddGetBuyOrdersEndpoint();
+
+app.MapGroup("buy-order")
+    .AddCreateBuyOrderEndpoint()
+    .AddGetBuyOrdersEndpoint()
+    .AddDeleteBuyOrderEndpoint();
+
 app.MapHub<StoreHub>("/Store");
 app.UseCors("AllowAspire");
 app.Run();

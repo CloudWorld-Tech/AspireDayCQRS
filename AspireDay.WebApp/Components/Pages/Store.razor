@@ -2,12 +2,11 @@
 @using AspireDay.Domain.Features.Orders.CreateBuyOrder
 @using AspireDay.Domain.Features.Orders.GetBuyOrders
 @using AspireDay.WebApp.Clients
+@using AspireDay.WebApp.Services
 @using Mapster
 @using Microsoft.AspNetCore.SignalR.Client
-@using Syncfusion.Blazor.Inputs
 @inject StoreApiClient StoreApi
-@inject ILogger<Store> Logger;
-@using Syncfusion.Blazor.Notifications
+@inject ISessionService SessionService
 @rendermode InteractiveServer
 
 <PageTitle>Store</PageTitle>
@@ -24,34 +23,20 @@
 }
 else
 {
-    <div class="control-section toast-default-section">
-
-        <SfToast @ref="ToastObj" Title="Anjolie Stokes" Width="230" Height="250" Content="@ToastContent" Timeout="@ToastTimeOut">
-            <ToastPosition X="Right" Y="Bottom"></ToastPosition>
-            <ToastButtons>
-                <ToastButton Content="Ignore" OnClick="@HideToast"></ToastButton>
-                <ToastButton Content="reply"></ToastButton>
-            </ToastButtons>
-        </SfToast>
-
-        <div class="col-lg-12 control-section">
-            <div class="content-wrapper">
-                <div class="row">
-                    <SfGrid TValue="GetBuyOrderResponse" DataSource="@_orders" AllowPaging="true" AllowFiltering="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
-                        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
-                        <GridEvents OnActionBegin="OnActionBegin" TValue="GetBuyOrderResponse"></GridEvents>
-                    </SfGrid>
-                </div>
+    <div class="col-lg-12 control-section">
+        <div class="content-wrapper">
+            <div class="row">
+                <SfGrid TValue="GetBuyOrderResponse" DataSource="@_orders" AllowPaging="true" AllowFiltering="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+                    <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+                    <GridEvents OnActionBegin="OnActionBegin" TValue="GetBuyOrderResponse"></GridEvents>
+                </SfGrid>
             </div>
         </div>
     </div>
 }
 
 @code {
-    SfToast ToastObj;
     private IEnumerable<GetBuyOrderResponse>? _orders;
-    private int ToastTimeOut { get; set; } = 10000;
-    private string ToastContent { get; set; } = "<p><img src='https://blazor.syncfusion.com/demos/images/toast/laura.png'></p>";
     [SupplyParameterFromForm] public CreateBuyOrderModel? Model { get; set; } = new();
     private HubConnection? _hubConnection;
 
@@ -61,15 +46,11 @@ else
             .WithUrl("http://localhost:5064/Store")
             .Build();
 
-        _hubConnection.On<string>("NotifyBuyOrder", async (orderId) =>
-        {
-            Logger.LogWarning("Old Orders Count - {Count}", _orders?.Count());
-            await UpdateOrders();
-        });
+        _hubConnection.On<string>("NotifyBuyOrder", async (orderId) => { await UpdateOrders(); });
 
         await _hubConnection.StartAsync();
 
-        _orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65"));
+        _orders = await StoreApi.GetBuyOrdersAsync(SessionService.UserId);
     }
 
     public async Task OnActionBegin(ActionEventArgs<GetBuyOrderResponse> args)
@@ -79,27 +60,22 @@ else
             case Syncfusion.Blazor.Grids.Action.BeginEdit:
                 break;
             case Syncfusion.Blazor.Grids.Action.Add:
-                args.Data.UserId = Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65");
+                args.Data.UserId = SessionService.UserId;
                 args.Data.ProductId = Guid.NewGuid();
-                await ToastObj.ShowAsync();
                 break;
             case Syncfusion.Blazor.Grids.Action.Save:
                 await StoreApi.CreateBuyOrderAsync(args.Data.Adapt<CreateBuyOrderModel>());
                 break;
             case Syncfusion.Blazor.Grids.Action.Delete:
+                await StoreApi.DeleteBuyOrderAsync(args.Data.OrderId);
                 break;
         }
     }
 
     private async ValueTask UpdateOrders()
     {
-        _orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65"));
+        _orders = await StoreApi.GetBuyOrdersAsync(SessionService.UserId);
         await InvokeAsync(StateHasChanged);
-    }
-
-    private async Task HideToast()
-    {
-        await ToastObj.HideAsync();
     }
 
     public async ValueTask DisposeAsync()
@@ -109,5 +85,4 @@ else
             await _hubConnection.DisposeAsync();
         }
     }
-
 }

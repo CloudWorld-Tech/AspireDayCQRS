@@ -17,4 +17,9 @@ public class StoreApiClient(HttpClient httpClient)
         var response = await httpClient.PostAsJsonAsync("/buy-order", buyRequest, cancellationToken);
         return await response.Content.ReadFromJsonAsync<CreateBuyOrderResponse>(cancellationToken: cancellationToken);
     }
+    
+    public async Task DeleteBuyOrderAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        await httpClient.DeleteAsync($"/buy-order/{id}", cancellationToken);
+    }
 }

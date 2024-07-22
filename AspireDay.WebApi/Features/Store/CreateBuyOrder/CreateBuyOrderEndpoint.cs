@@ -9,7 +9,7 @@ public static class CreateBuyOrderEndpoint
 {
     public static IEndpointRouteBuilder AddCreateBuyOrderEndpoint(this IEndpointRouteBuilder builder)
     {
-        builder.MapPost("/buy-order", async ([FromBody] CreateBuyOrderModel buyRequest,
+        builder.MapPost("/", async ([FromBody] CreateBuyOrderModel buyRequest,
                 [FromServices] IMediator mediator, CancellationToken cancellationToken = default) =>
             {
                 var response = await mediator.Send(new CreateBuyOrderCommand(buyRequest), cancellationToken);
