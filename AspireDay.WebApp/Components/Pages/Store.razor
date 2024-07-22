@@ -2,10 +2,13 @@
 @using AspireDay.Domain.Features.Orders.CreateBuyOrder
 @using AspireDay.Domain.Features.Orders.GetBuyOrders
 @using AspireDay.WebApp.Clients
+@using Mapster
 @using Microsoft.AspNetCore.SignalR.Client
-@attribute [StreamRendering]
+@using Syncfusion.Blazor.Inputs
 @inject StoreApiClient StoreApi
 @inject ILogger<Store> Logger;
+@using Syncfusion.Blazor.Notifications
+@rendermode InteractiveServer
 
 <PageTitle>Store</PageTitle>
 
@@ -13,7 +16,7 @@
 
 <p>Orders Request</p>
 
-@if (Orders == null)
+@if (_orders == null)
 {
     <p>
         <em>Loading...</em>
@@ -21,77 +24,35 @@
 }
 else
 {
-    <form method="post" @onsubmit="Submit" @formname="store-form">
-        <AntiforgeryToken/>
-        <div class="form-group row">
+    <div class="control-section toast-default-section">
 
-            <div>
-                <label class="col-sm-2 col-form-label">
-                    Product Id:
-                    <InputText @bind-Value="Model!.ProductId" class="form-control"/>
-                </label>
+        <SfToast @ref="ToastObj" Title="Anjolie Stokes" Width="230" Height="250" Content="@ToastContent" Timeout="@ToastTimeOut">
+            <ToastPosition X="Right" Y="Bottom"></ToastPosition>
+            <ToastButtons>
+                <ToastButton Content="Ignore" OnClick="@HideToast"></ToastButton>
+                <ToastButton Content="reply"></ToastButton>
+            </ToastButtons>
+        </SfToast>
+
+        <div class="col-lg-12 control-section">
+            <div class="content-wrapper">
+                <div class="row">
+                    <SfGrid TValue="GetBuyOrderResponse" DataSource="@_orders" AllowPaging="true" AllowFiltering="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
+                        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+                        <GridEvents OnActionBegin="OnActionBegin" TValue="GetBuyOrderResponse"></GridEvents>
+                    </SfGrid>
+                </div>
             </div>
-
-            <div>
-                <label class="col-sm-2 col-form-label">
-                    User Id:
-                    <InputText @bind-Value="Model!.UserId" class="form-control"/>
-                </label>
-            </div>
-
-            <div>
-                <label class="col-sm-2 col-form-label">
-                    Quantity:
-                    <InputNumber @bind-Value="Model!.Quantity" class="form-control"/>
-                </label>
-
-            </div>
-
-            <div>
-                <label class="col-sm-2 col-form-label">
-                    Price:
-                    <InputNumber @bind-Value="Model!.Price" class="form-control"/>
-                </label>
-            </div>
-
-            <div>
-                <button type="submit" class="btn btn-primary m-1">Submit</button>
-            </div>
-
         </div>
-    </form>
-    
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Order Id</th>
-            <th>User Id</th>
-            <th>Product Id</th>
-            <th>Quantity</th>
-            <th>Price</th>
-            <th>Total</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var order in Orders)
-        {
-            <tr>
-                <td>@order.OrderId</td>
-                <td>@order.UserId</td>
-                <td>@order.ProductId</td>
-                <td>@order.Quantity</td>
-                <td>@order.Price</td>
-                <td>@(order.Quantity * order.Price)</td>
-            </tr>
-        }
-        </tbody>
-    </table>
+    </div>
 }
 
 @code {
-    public List<GetBuyOrderResponse>? Orders;
-    [SupplyParameterFromForm] 
-    public CreateBuyOrderModel? Model { get; set; } = new ();
+    SfToast ToastObj;
+    private IEnumerable<GetBuyOrderResponse>? _orders;
+    private int ToastTimeOut { get; set; } = 10000;
+    private string ToastContent { get; set; } = "<p><img src='https://blazor.syncfusion.com/demos/images/toast/laura.png'></p>";
+    [SupplyParameterFromForm] public CreateBuyOrderModel? Model { get; set; } = new();
     private HubConnection? _hubConnection;
 
     protected override async Task OnInitializedAsync()
@@ -102,24 +63,45 @@ else
 
         _hubConnection.On<string>("NotifyBuyOrder", async (orderId) =>
         {
-            Logger.LogInformation("Old Orders Count - {Count}", Orders.Count);
-            Orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65"));
-            Logger.LogInformation("New Orders Count - {Count}", Orders.Count);
-            await InvokeAsync(StateHasChanged);
+            Logger.LogWarning("Old Orders Count - {Count}", _orders?.Count());
+            await UpdateOrders();
         });
 
         await _hubConnection.StartAsync();
-        
-        Orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65"));
+
+        _orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65"));
     }
 
-    private async Task Submit()
+    public async Task OnActionBegin(ActionEventArgs<GetBuyOrderResponse> args)
     {
-        Logger.LogInformation(Model.ProductId);
-        await StoreApi.CreateBuyOrderAsync(Model);
-        Model = new CreateBuyOrderModel();
+        switch (args.RequestType)
+        {
+            case Syncfusion.Blazor.Grids.Action.BeginEdit:
+                break;
+            case Syncfusion.Blazor.Grids.Action.Add:
+                args.Data.UserId = Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65");
+                args.Data.ProductId = Guid.NewGuid();
+                await ToastObj.ShowAsync();
+                break;
+            case Syncfusion.Blazor.Grids.Action.Save:
+                await StoreApi.CreateBuyOrderAsync(args.Data.Adapt<CreateBuyOrderModel>());
+                break;
+            case Syncfusion.Blazor.Grids.Action.Delete:
+                break;
+        }
     }
-    
+
+    private async ValueTask UpdateOrders()
+    {
+        _orders = await StoreApi.GetBuyOrdersAsync(Guid.Parse("f07a8ade-a1d6-4dc8-9b09-17d37ff61b65"));
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task HideToast()
+    {
+        await ToastObj.HideAsync();
+    }
+
     public async ValueTask DisposeAsync()
     {
         if (_hubConnection is not null)
@@ -127,4 +109,5 @@ else
             await _hubConnection.DisposeAsync();
         }
     }
+
 }

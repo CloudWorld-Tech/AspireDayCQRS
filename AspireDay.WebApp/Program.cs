@@ -1,9 +1,11 @@
 using AspireDay.ServiceDefaults;
 using AspireDay.WebApp.Clients;
 using AspireDay.WebApp.Components;
+using Syncfusion.Blazor;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
+builder.Services.AddSyncfusionBlazor();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
