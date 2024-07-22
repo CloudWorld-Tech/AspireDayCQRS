@@ -49,7 +49,7 @@ else
     private HubConnection? _hubConnection;
     SfToast ToastRef;
     private const string ToastPosition = "Right";
-    private string ToastContent = "";
+    private const string ToastContent = "Orders list has been updated";
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,7 +80,6 @@ else
                 ShowSpinner = true;
                 await StoreApi.CreateBuyOrderAsync(args.Data.Adapt<CreateBuyOrderModel>());
                 ShowSpinner = false;
-                ToastContent = "Order Request Created";
                 await ToastRef.ShowAsync();
                 break;
             case Syncfusion.Blazor.Grids.Action.Delete:
@@ -92,7 +91,6 @@ else
     private async ValueTask UpdateOrders()
     {
         _orders = await StoreApi.GetBuyOrdersAsync(SessionService.UserId);
-        ToastContent = "Orders list has been updated";
         await ToastRef.ShowAsync();
         await InvokeAsync(StateHasChanged);
     }
