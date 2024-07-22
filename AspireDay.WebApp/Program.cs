@@ -15,6 +15,8 @@ builder.Services.AddRazorComponents()
 builder.Services.AddHttpClient<StoreApiClient>(client => client.BaseAddress = new Uri("http://webapi"));
 builder.Services.AddSingleton<ISessionService, SessionService>();
 
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense(builder.Configuration.GetValue("SyncfusionKey", ""));
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

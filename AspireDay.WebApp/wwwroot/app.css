@@ -49,13 +49,3 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
-
-#elementToastTime .e-toast-message {
-    padding: 10px;
-    text-align: center;
-}
-
-#textbox-contain {
-    text-align: initial;
-    display: inline-block
-}

@@ -4,6 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>ae54773d-78a5-4c62-9691-7e8e7356266f</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -11,14 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Update="wwwroot\libs\signalr.min.js">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Syncfusion.Blazor" Version="26.1.42" />
-      <PackageReference Include="Syncfusion.Blazor.Themes" Version="26.1.42" />
     </ItemGroup>
 
 </Project>

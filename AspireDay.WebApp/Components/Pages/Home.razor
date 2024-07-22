@@ -5,3 +5,26 @@
 <h1>Store App</h1>
 
 Welcome to Aspire Day!
+
+@code {
+
+    public class Games
+    {
+        public string Id { get; set; }
+        public string Text { get; set; }
+    }
+
+    readonly List<Games> _localData =
+    [
+        new Games() { Id = "Game1", Text = "American Football" },
+        new Games() { Id = "Game2", Text = "Badminton" },
+        new Games() { Id = "Game3", Text = "Basketball" },
+        new Games() { Id = "Game4", Text = "Cricket" },
+        new Games() { Id = "Game5", Text = "Football" },
+        new Games() { Id = "Game6", Text = "Golf" },
+        new Games() { Id = "Game7", Text = "Hockey" },
+        new Games() { Id = "Game8", Text = "Rugby" },
+        new Games() { Id = "Game9", Text = "Snooker" },
+        new Games() { Id = "Game10", Text = "Tennis" }
+    ];
+}

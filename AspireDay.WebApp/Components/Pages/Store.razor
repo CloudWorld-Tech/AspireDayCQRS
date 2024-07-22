@@ -12,18 +12,26 @@
 <PageTitle>Store</PageTitle>
 
 <h1>Store</h1>
-
 <p>Orders Request</p>
 
-@if (_orders == null)
+@if (ShowSpinner)
 {
-    <p>
-        <em>Loading...</em>
-    </p>
+    <div id="container">
+        <SfSpinner @bind-Visible="@ShowSpinner">
+        </SfSpinner>
+    </div>
 }
 else
 {
+    <SfToast ID="toast_default" @ref="ToastRef" Title="Adaptive Tiles Meeting"
+             Content="@ToastContent"
+             Timeout="5000"
+             Icon="e-meeting">
+        <ToastPosition X="@ToastPosition"></ToastPosition>
+    </SfToast>
+
     <div class="col-lg-12 control-section">
+
         <div class="content-wrapper">
             <div class="row">
                 <SfGrid TValue="GetBuyOrderResponse" DataSource="@_orders" AllowPaging="true" AllowFiltering="true" Toolbar="@(new List<string>() { "Add", "Edit", "Delete", "Update", "Cancel" })">
@@ -37,20 +45,25 @@ else
 
 @code {
     private IEnumerable<GetBuyOrderResponse>? _orders;
-    [SupplyParameterFromForm] public CreateBuyOrderModel? Model { get; set; } = new();
+    private bool ShowSpinner { get; set; }
     private HubConnection? _hubConnection;
+    SfToast ToastRef;
+    private const string ToastPosition = "Right";
+    private string ToastContent = "";
 
     protected override async Task OnInitializedAsync()
     {
+        ShowSpinner = true;
+
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl("http://localhost:5064/Store")
+            .WithUrl(SessionService.SignalRServiceUri)
             .Build();
 
         _hubConnection.On<string>("NotifyBuyOrder", async (orderId) => { await UpdateOrders(); });
-
         await _hubConnection.StartAsync();
-
         _orders = await StoreApi.GetBuyOrdersAsync(SessionService.UserId);
+
+        ShowSpinner = false;
     }
 
     public async Task OnActionBegin(ActionEventArgs<GetBuyOrderResponse> args)
@@ -64,7 +77,11 @@ else
                 args.Data.ProductId = Guid.NewGuid();
                 break;
             case Syncfusion.Blazor.Grids.Action.Save:
+                ShowSpinner = true;
                 await StoreApi.CreateBuyOrderAsync(args.Data.Adapt<CreateBuyOrderModel>());
+                ShowSpinner = false;
+                ToastContent = "Order Request Created";
+                await ToastRef.ShowAsync();
                 break;
             case Syncfusion.Blazor.Grids.Action.Delete:
                 await StoreApi.DeleteBuyOrderAsync(args.Data.OrderId);
@@ -75,6 +92,8 @@ else
     private async ValueTask UpdateOrders()
     {
         _orders = await StoreApi.GetBuyOrdersAsync(SessionService.UserId);
+        ToastContent = "Orders list has been updated";
+        await ToastRef.ShowAsync();
         await InvokeAsync(StateHasChanged);
     }
 
