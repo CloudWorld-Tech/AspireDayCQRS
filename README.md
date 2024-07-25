@@ -18,9 +18,5 @@ The AspireDay Web Application is a Blazor Server application designed to demonst
 ## Setup and Installation
 
 1. **Prerequisites**:
-   - Ensure you have [.NET 6 SDK](https://dotnet.microsoft.com/download/dotnet/6.0) installed on your machine.
+   - Ensure you have [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) installed on your machine.
    - An IDE such as [Visual Studio 2022](https://visualstudio.microsoft.com/vs/) or [JetBrains Rider](https://www.jetbrains.com/rider/) for development.
-
-2. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/your-repository/AspireDay.git
